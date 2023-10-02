@@ -21,11 +21,11 @@ class C_roles extends CI_Controller {
 
     public function index()
     {
-        $title['display']   = "Roles";
-        $title['parent']    = "Roles";
-        $title['level'][0]  = "Auth";
+        $title['display']   = "Peran";
+        $title['parent']    = "Peran";
+        $title['level'][0]  = "Autentikasi";
         $title['href'][0]   = "";
-        $title['level'][1]  = "Roles";
+        $title['level'][1]  = "Peran";
         $title['href'][1]   = "";
         
         $permissions        = $this->table_permissions->all();
@@ -48,9 +48,9 @@ class C_roles extends CI_Controller {
             $tbody[] = $no++;
             $tbody[] = $d->title;
             $tbody[] = $d->description;
-            $aksi = "<button class='btn btn-primary row-edit' data-toggle='modal' data-id=".$d->id."><i class='fas fa-pen mr-2'></i> Update</button>";
-            $aksi .= " <button class='btn btn-info row-permissions' data-toggle='modal' data-id=".$d->id."><i class='fas fa-list mr-2'></i> Permissions</button>";
-            $aksi .= " <button class='btn btn-danger row-delete' id='id' data-toggle='modal' data-id=".$d->id."><i class='fas fa-times mr-2'></i> Delete</button>";
+            $aksi = "<button class='btn btn-light row-edit' data-toggle='modal' data-id=".$d->id."><i class='fas fa-pen mr-2'></i> Ubah</button>";
+            $aksi .= " <button class='btn btn-warning row-permissions' data-toggle='modal' data-id=".$d->id."><i class='fas fa-list mr-2'></i> Hak Akses</button>";
+            $aksi .= " <button class='btn btn-primary row-delete' id='id' data-toggle='modal' data-id=".$d->id."><i class='fas fa-times mr-2'></i> Hapus</button>";
             $tbody[] = $aksi;
             $data[] = $tbody; 
         }
@@ -81,9 +81,9 @@ class C_roles extends CI_Controller {
 
     public function update()
     {
-        $id['id']               = $this->input->post('e_id');
-        $data['title']          = $this->input->post('e_title');
-        $data['description']    = $this->input->post('e_description');
+        $id['id'] = $this->input->post('id');
+        $data['title']  = $this->input->post('title');
+        $data['description'] = $this->input->post('description');
 
         $result = $this->table_roles->update($id, $data);
         echo json_encode($result);

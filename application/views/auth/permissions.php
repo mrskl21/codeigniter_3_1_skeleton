@@ -17,7 +17,7 @@
                                 <div class="card-header">
                                     <h4>Table</h4>
                                     <div class="card-header-action">
-                                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-add">Create <i class="fas fa-plus"></i></button type="button">
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">Tambah Data <i class="fas fa-plus"></i></button type="button">
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -28,7 +28,7 @@
                                                         <th>#</th>
                                                         <th>Title</th>
                                                         <th>Description</th>
-                                                        <th>Action</th>
+                                                        <th></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -44,22 +44,21 @@
             
             <?php $this->load->view('part/foot');?>
             
-        </div>
-    </div>
+      </div>
+  </div>
 
-    <?php $this->load->view('part/script');?>
-    <?php $this->load->view('part/alert');?>
+  <?php $this->load->view('part/script');?>
 
     <div class="modal fade" id="modal-add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Create</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Data Baru</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="form-add" enctype="multipart/form-data" class="form">
+                <form id="form-add">
                     <div class="modal-body">
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Title</label>
@@ -75,8 +74,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -86,12 +85,12 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Update</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Ubah Data</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="form-edit" enctype="multipart/form-data" class="form">
+                <form id="form-edit">
                     <div class="modal-body">
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Title</label>
@@ -109,197 +108,203 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <script>
-        $(document).ready(function () {
 
-            var tabledata = $('#data-table').DataTable({
-                "processing": true,
-                "ajax": "<?=base_url("auth/permissions/data")?>",
-                stateSave: true,
-                "order": []
+<script>
+    $(document).ready(function () {
+
+        var tabledata = $('#data-table').DataTable({
+            "processing": true,
+            "ajax": "<?=base_url("auth/permissions/data")?>",
+            stateSave: true,
+            "order": []
+        })
+        
+        $('#form-add').on('submit', function () {
+            $.ajax({
+                type: "POST",
+                url: "<?=base_url('auth/permissions/create')?>",
+                beforeSend :function () {
+                    swal({
+                        title: 'Memproses',
+                        html: 'Memuat Data',
+                        onOpen: () => {
+                        swal.showLoading()
+                        }
+                    })      
+                    },
+                data: {
+                    title       : $('#title').val(),
+                    description : $('#description').val()
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    tabledata.ajax.reload(null,false);
+                    swal({
+                        title: 'Sukses',
+                        text: 'Data telah ditambahkan!',
+                        icon: "success",
+                        timer: 3000,
+                    })
+        
+                    $('#modal-add').modal('hide');
+                    $('#title').val('');
+                    $('#description').val('');
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    swal({
+                        title: 'Gagal',
+                        text: 'Duplicated value!',
+                        icon: "error",
+                        timer: 3000,
+                    })
+        
+                    $('#modal-add').modal('hide');
+                }
             })
-            
-            $("form#form-add").submit(function(e) {
-                e.preventDefault();    
-                var formData = new FormData(this);
-                $.ajax({
-                    url: "<?=base_url('auth/permissions/create')?>",
-                    type: 'POST',
-                    beforeSend :function () {
-                        swal({
-                            title: 'Waiting',
-                            html: 'Processing data',
-                            onOpen: () => {
-                            swal.showLoading()
-                            }
-                        })      
-                    },
-                    data: formData,
-                    success: function (data) {
-                        tabledata.ajax.reload(null,false);
-                        swal({
-                            title: 'Succeed',
-                            text: 'Data had been added!',
-                            icon: "success",
-                            timer: 3000,
-                        })
-                        $('#modal-add').modal('hide');
-                        var frm = document.getElementsById('form-add')[0];
-                        frm.submit(); // Submit the form
-                        frm.reset();  // Reset all form data
-                        return false;
-                    },
-                    error: function (jqXHR, textStatus, errorThrown)
-                    {
-                        // console.log(jqXHR, textStatus, errorThrown);
-                        swal({
-                            title: 'Failed',
-                            text: 'Duplicated value!',
-                            icon: "error",
-                            timer: 3000,
-                        })
-                        $('#modal-add').modal('hide');
-                    },
-                    cache: false,
-                    contentType: false,
-                    processData: false
-                })
-                return false;
-            });
-            
-            $('#data-table').on('click','.row-edit', function () {
-                $.ajax({
-                    type: "POST",
-                    url: "<?=base_url('auth/permissions/get')?>",
-                    dataType: "JSON",
-                    beforeSend :function () {
-                        swal({
-                                title: 'Waiting',
-                                html: 'Processing data',
-                            onOpen: () => {
-                            swal.showLoading()
-                            }
-                        })      
-                        },
-                    data: {id:$(this).data('id')},
-                    success: function (data) {
-                        swal.close();
-        
-                        $('[name="e_id"]').val(data.id);
-                        $('[name="e_title_current"]').val(data.title);
-                        $('[name="e_title"]').val(data.title);
-                        $('[name="e_description"]').val(data.description);
-        
-                        $('#modal-edit').modal('show');
-                    }
-                });
-            });
-            
-            $("form#form-edit").submit(function(e) {
-                e.preventDefault();    
-                var formData = new FormData(this);
-                $.ajax({
-                    url: "<?=base_url('auth/permissions/update')?>",
-                    type: 'POST',
-                    beforeSend :function () {
-                        swal({
-                            title: 'Waiting',
-                            html: 'Processing data',
-                            onOpen: () => {
-                            swal.showLoading()
-                            }
-                        })      
-                    },
-                    data: formData,
-                    success: function (data) {
-                        tabledata.ajax.reload(null,false);
-                        swal({
-                            title: 'Succeed',
-                            text: 'Data had been added!',
-                            icon: "success",
-                            timer: 3000,
-                        })
-                        $('#modal-edit').modal('hide');
-                    },
-                    error: function (jqXHR, textStatus, errorThrown)
-                    {
-                        swal({
-                            title: 'Failed',
-                            text: 'Duplicated value!',
-                            icon: "error",
-                            timer: 3000,
-                        })
-                        $('#modal-edit').modal('hide');
-                    },
-                    cache: false,
-                    contentType: false,
-                    processData: false
-                })
-                return false;
-            });
-            
-            $('#data-table').on('click','.row-delete', function () {
-                swal({
-                    title: 'Are you sure?',
-                    text: "Once deleted, you will not be able to recover this imaginary file! ",
-                    icon: 'warning',
-                    buttons: {
-                        cancel: "Cancel",
-                        catch: {
-                            text: "Submit",
-                            value: "catch",
-                        },
-                    }
-                }).then((value) => {
-                    switch (value) {
-                        case "catch":
-                        $.ajax({
-                            url:"<?=base_url('auth/permissions/delete')?>",  
-                            method:"POST",
-                            beforeSend :function () {
-                            swal({
-                            title: 'Waiting',
-                            html: 'Processing data',
-                                    onOpen: () => {
-                                    swal.showLoading()
-                                    }
-                                })      
-                            },    
-                            data:{id:$(this).data('id')},
-                            dataType: "JSON",
-                            success:function(data){
-                                swal({
-                                    title: 'Succeed',
-                                    text: 'Data had been deleted!',
-                                    icon: "success",
-                                    timer: 3000,
-                                })
-                                tabledata.ajax.reload(null, false)
-                            }
-                        })
-                        break;
-
-                        default:
-                            swal({
-                                title: 'Cancelled',
-                                text: 'Change are not saved!',
-                                icon: "info",
-                                timer: 3000,
-                            });
-                    }
-                })
-            });
-
+            return false;
         });
-    </script>
+        
+        $('#data-table').on('click','.row-edit', function () {
+            $.ajax({
+                type: "POST",
+                url: "<?=base_url('auth/permissions/get')?>",
+                dataType: "JSON",
+                beforeSend :function () {
+                    swal({
+                        title: 'Memproses',
+                        html: 'Memuat Data',
+                        onOpen: () => {
+                        swal.showLoading()
+                        }
+                    })      
+                    },
+                data: {id:$(this).data('id')},
+                success: function (data) {
+                    swal.close();
+      
+                    $('[name="e_id"]').val(data.id);
+                    $('[name="e_title_current"]').val(data.title);
+                    $('[name="e_title"]').val(data.title);
+                    $('[name="e_description"]').val(data.description);
+      
+                    $('#modal-edit').modal('show');
+                }
+            });
+        });
+        
+        $('#form-edit').on('submit', function () {
+    
+            $.ajax({
+            type: "POST",
+            url: "<?=base_url('auth/permissions/update')?>",
+            beforeSend :function () {
+				swal({
+					title: 'Memproses',
+					html: 'Memuat Data',
+                    onOpen: () => {
+                    swal.showLoading()
+                    }
+                })      
+            },
+            data: {
+                id              : $('#e_id').val(),
+                title_current   : $('#e_title_current').val(),
+                title           : $('#e_title').val(),
+                description     : $('#e_description').val()
+            },
+            dataType: "JSON",
+            success: function (data) {
+                tabledata.ajax.reload(null,false);
+                swal({
+					title: 'Sukses',
+					text: 'Data telah diubah!',
+                    icon: "success",
+                    timer: 3000
+                })
+                $('#modal-edit').modal('hide');
+                
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+				swal({
+					title: 'Gagal',
+					text: 'Duplicated value!',
+                    icon: "error",
+                    timer: 3000,
+                })
+    
+                $('#modal-edit').modal('hide');
+            }
+            })
+            return false;
+        });
+        
+        $('#data-table').on('click','.row-delete', function () {
+            swal({
+                title: 'Apa anda yakin?',
+                text: "Setelah dihapus, data tidak dapat dikembalikan!! ",
+                icon: 'warning',
+                buttons: {
+                    cancel: "Cancel",
+                    catch: {
+                        text: "OK",
+                        value: "catch",
+                    },
+                }
+            }).then((value) => {
+                switch (value) {
+                    case "catch":
+                    $.ajax({
+                        url:"<?=base_url('auth/permissions/delete')?>",  
+                        method:"POST",
+                        beforeSend :function () {
+                        	swal({
+								title: 'Memproses',
+								html: 'Memuat Data',
+                                onOpen: () => {
+                                swal.showLoading()
+                                }
+                            })      
+                        },    
+                        data:{id:$(this).data('id')},
+                        dataType: "JSON",
+                        success:function(data){
+                            swal({
+                                title: 'Sukses',
+                                text: 'Data telah dihapus!',
+                                icon: "success",
+                                timer: 3000,
+                            })
+                            tabledata.ajax.reload(null, false)
+                        }
+                    })
+                    break;
+
+                    default:
+                        swal({
+                            title: 'Dibatalkan',
+                            text: 'Tidak ada perubahan!',
+                            icon: "info",
+                            timer: 3000,
+                        });
+                }
+            })
+        });
+
+    });
+</script>
+<?php $this->load->view('part/alert');?>
+
 
 </body>
 </html>

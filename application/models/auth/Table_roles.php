@@ -12,7 +12,6 @@ class Table_roles extends CI_Model
 
     public function all()
     {
-        // $this->db->order_by('title','ASC');
         return $this->db->get($this->table)->result();
     }
 
@@ -25,6 +24,12 @@ class Table_roles extends CI_Model
     {
         $this->db->where($id);
         return $this->db->get($this->table)->row();
+    }
+
+    public function result($id)
+    {
+        $this->db->where($id);
+        return $this->db->get($this->table)->result();
     }
 
     public function update($id, $data)

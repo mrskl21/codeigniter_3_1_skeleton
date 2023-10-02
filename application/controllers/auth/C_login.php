@@ -8,6 +8,7 @@ class C_login extends CI_Controller {
         
         $this->load->model('auth/table_users');
         $this->load->model('auth/table_roles_has_permissions');
+
     }
 
     public function login()
@@ -23,9 +24,9 @@ class C_login extends CI_Controller {
 		$username   = $this->input->post('username');
         $password   = $this->input->post('password');
 		$data = array(
-			'username' => $username,
-			'password' => md5($password),
-			'status' => 1,
+			'auth_users.username' => $username,
+			'auth_users.password' => md5($password),
+			'auth_users.status' => 1,
         );
 
 
@@ -35,21 +36,21 @@ class C_login extends CI_Controller {
             $param['user_id']   = $validate->id;
             $permissions    = $this->table_roles_has_permissions->get_by_id($validate->id);
             $session_data = array(
-                'id' 	        => $validate->id,
-                'fullname'	    => $validate->fullname,
-                'roles_id'	    => $validate->roles_id,
-                'photo'	        => $validate->photo,
-                'permissions'   => $permissions
+                'id' 	            => $validate->id,
+                'fullname'	        => $validate->fullname,
+                'roles_id'	        => $validate->roles_id,
+                'photo'	            => $validate->photo,
+                'permissions'       => $permissions
             );
             $this->session->set_userdata('logged_in',$session_data);
-            $this->session->set_flashdata('success', "Selamat Datang!");
+            $this->session->set_flashdata('success', "Welcome!");
 
             redirect('home', $session_data);
         }
         else
 
         {
-            $this->session->set_flashdata('error', "Masuk Gagal! anda belum terdaftar atau username/kata sandi anda salah");
+            $this->session->set_flashdata('error', "Failed! username is not registered or wrong password");
             redirect('login');
         }
 
@@ -59,10 +60,7 @@ class C_login extends CI_Controller {
 	public function logout()
 	{
 		$this->session->sess_destroy();
-		$this->session->set_flashdata(
-			'message',
-			'<div class="alert alert-success mb-2" role="alert" id="flash_message">Logged out!</div>'
-		);
+        $this->session->set_flashdata('success', "Logged out!");
     	redirect('login');
 	}
 
@@ -91,11 +89,11 @@ class C_login extends CI_Controller {
 
             $this->table_users->add($data);
             
-            $this->session->set_flashdata('success', "Berhasil! Mohon tunggu akun teraktivasi");
+            $this->session->set_flashdata('success', "Success! Please wait for verification");
             redirect('login');
             
         }else{
-            $this->session->set_flashdata('error', "Gagal! Username telah terpakai. Mohon coba lagi");
+            $this->session->set_flashdata('error', "Failed! Username had been used. Please try again");
             redirect('registration');
 
         }

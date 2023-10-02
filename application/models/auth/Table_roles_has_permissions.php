@@ -55,6 +55,12 @@ class Table_roles_has_permissions extends CI_Model
         }
     }
 
+    public function result($id)
+    {
+        $this->db->where($id);
+        return $this->db->get($this->table)->result();
+    }
+
     public function update($id, $data)
     {
         $this->db->where($id);
@@ -68,3 +74,4 @@ class Table_roles_has_permissions extends CI_Model
     }
     
 }
+

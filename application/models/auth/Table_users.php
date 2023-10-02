@@ -32,7 +32,11 @@ class Table_users extends CI_Model
     }
 
     public function login($data)
-    {
+        {$this->db->select('
+            auth_users.*,
+            auth_roles.title as roles_title
+        ');
+        $this->db->join('auth_roles','auth_users.roles_id = auth_roles.id');
         return $this->db->get_where($this->table,$data)->row();
         
     }
@@ -51,6 +55,17 @@ class Table_users extends CI_Model
         $this->db->join('auth_roles','auth_users.roles_id = auth_roles.id');
         $this->db->where($id);
         return $this->db->get($this->table)->row();
+    }
+
+    public function result($id)
+    {
+        $this->db->select('
+            auth_users.*,
+            auth_roles.title as roles_title
+        ');
+        $this->db->join('auth_roles','auth_users.roles_id = auth_roles.id');
+        $this->db->where($id);
+        return $this->db->get($this->table)->result();
     }
 
     public function update($id, $data)

@@ -1,9 +1,8 @@
 <footer class="main-footer">
     <div class="footer-left">
-      Copyright &copy; <?=date("Y");?> <div class="bullet"></div> Developed By <a href="https://lasahido.id/" target="_blank">lasahido.id</a> 
-
+		<a href="https://manadokota.go.id/" target="_blank">Aplikasi Monitoring Tumbuh Kembang Anak</a> <div class="bullet"></div> PKK Kecamatan Mapanget
     </div>
     <div class="footer-right">
-      
+			&copy; <?=date("Y");?> 
     </div>
 </footer>

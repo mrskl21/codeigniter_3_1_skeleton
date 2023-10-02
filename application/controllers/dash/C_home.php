@@ -13,8 +13,10 @@ class C_home extends CI_Controller {
 
     public function index()
     {
-        $title['display']   = "Home";
-        $title['parent']    = "Home";
+        $title['display']   = "Beranda";
+        $title['parent']    = "Beranda";
+        $title['level'][0]  = "Utama";
+        $title['href'][0]   = "";
 
         $this->load->view('home/index', compact('title'));
     }
